@@ -1,21 +1,27 @@
 MALL.cz leak checker
 ````````````````````
 
-Check your email address against leaked MALL.cz database.
+Check your email address(es) against leaked MALL.cz database and print result to standard output.
 
 Usage:
-
+::
+  -h, --help         show this help message and exit
+  --email EMAIL      Your email.
+  --csvFile CSVFILE  A CSV file with emails to be checked (email must appear
+                     at the first column)
 ::
 
-  ./check_email.py CENSORED@seznam.cz
-  Warning: Your email, password, name and phone leaked!
+Examples:
 
-Or:
-
+Check single email
+::
+./check_email.py --email john.doe@example.com
 ::
 
-  ./check_email.py bleh@bleh.bleh
-  Your email was not found in the leaked data.
+Check multiple emails
+::
+./check_email.py --csvFile emails.csv
+::
 
 Why
 ```
