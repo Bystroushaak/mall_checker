@@ -3,20 +3,23 @@
 #
 # Interpreter version: python 2.7
 #
-import gzip
+from __future__ import print_function
 
+import csv
+import gzip
 import hashlib
 import argparse
-import csv
 
 
 def gen_hash(email):
     return hashlib.sha256(email.lower()).hexdigest()
 
+
 def read_csv(csvFile):
     with open(csvFile, 'rb') as f:
         reader = csv.reader(f)
         return list(reader)
+
 
 def read_hashes(fn):
     with gzip.open(fn) as f:
@@ -24,8 +27,18 @@ def read_hashes(fn):
 
     return set(hashes)
 
-def checkEmail(email, email_hashes):
+
+def check_email(email, email_hashes):
     return gen_hash(email) in email_hashes
+
+
+def print_red(msg, *args, **kwargs):
+    print("\033[31m%s\033[0m" % msg, *args)
+
+
+def print_green(msg, *args, **kwargs):
+    print("\033[32m%s\033[0m" % msg, *args)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -45,12 +58,12 @@ if __name__ == '__main__':
     email_hashes = read_hashes("email_hash_db.txt.gz")
 
     if args.csvFile:
-        print "\033[31mWarning: List of leaked emails\033[0m"
+        print_red("Warning: List of leaked emails;")
         for email in read_csv(args.csvFile):
-            if checkEmail(email[0], email_hashes):
-                print "\033[31m{}\033[0m".format(email[0])
+            if check_email(email[0], email_hashes):
+                print_red(email[0])
     else:
-        if checkEmail(args.email, email_hashes):
-            print "\033[31mWarning: Your email {}, password, name and phone leaked!\033[0m".format(args.email)
+        if check_email(args.email, email_hashes):
+            print_red("Warning: Your email (%s), password, name and phone leaked!" % args.email)
         else:
-            print "\033[32mYour email {} was not found in the leaked data.\033[0m".format(args.email)
+            print_green("Your email (%s) was not found in the leaked data." % args.email)
